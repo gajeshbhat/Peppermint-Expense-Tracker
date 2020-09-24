@@ -1,1 +1,1 @@
-web: gunicorn Peppermint.wsgi
+web: gunicorn Peppermint.wsgi:q
