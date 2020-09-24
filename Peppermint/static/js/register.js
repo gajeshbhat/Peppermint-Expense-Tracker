@@ -61,3 +61,20 @@ emailField.addEventListener('keyup',(e)=>{
      })
     }
 })
+
+// Password Button Toggling
+
+const passwordToggleButton = document.querySelector('#show-password-btn');
+
+passwordToggleButton.addEventListener('click',(e)=>{
+    const passwordFieldContent = document.querySelector('#passwordField');
+
+    if(passwordToggleButton.textContent == "Show Password"){
+       passwordToggleButton.textContent = "Hide";
+       passwordFieldContent.setAttribute('type','text');
+    }
+    else{
+        passwordToggleButton.textContent = "Show Password";
+        passwordFieldContent.setAttribute('type','password');
+    }
+})
