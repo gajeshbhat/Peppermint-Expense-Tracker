@@ -1,0 +1,34 @@
+{% extends 'base_auth.html' %}
+{% load static %}
+
+{% block content %}
+    <div class="row">
+        <div class="col-md-4"></div>
+        <div class="col-md=-4">
+            <div class="card-title">
+                <h4 align="center"> Register for a free account!</h4>
+            </div>
+                <form action="" method="post">
+                    <div class="form-group">
+                        <input type="text" name="Username" id="usernameField" class="form-control form-control-sm">
+                    </div>
+                    <div class="invalid-feedback" id="invalid-feedback-username" style="display: none">
+                        <p> Sorry! Username already taken</p>
+                    </div>
+                    <div class="form-group">
+                         <input type="email" name="Email" id="emailField" class="form-control form-control-sm">
+                    </div>
+                    <div class="form-group">
+                        <input type="password" name="Password" id="passwordField" class="form-control form-control-sm">
+                    </div>
+                     <div class="form-group">
+                         <small class="float-right">Show Password</small>
+                       <input type="submit" value="Register" name="submitButton" id="submitButton" class="btn btn-primary">
+                    </div>
+                </form>
+            </div>
+        </div>
+        <div class="col-md-4"></div>
+    </div>
+    <script src="{% static 'js/register.js' %}"></script>
+{% endblock %}
