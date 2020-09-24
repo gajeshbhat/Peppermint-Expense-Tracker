@@ -1,11 +1,13 @@
+import json
+
 from django.shortcuts import render
 from django.views import View
 from django.http import JsonResponse
 from django.contrib.auth.models import User
-import json
+from validate_email import validate_email
 
 
-# Create your views here.
+# User account auth Views
 
 class RegistrationView(View):
     def get(self, request):
@@ -25,3 +27,15 @@ class UserNameValidationView(View):
                 return JsonResponse({'username_success': 'Username available'})
         else:
             return JsonResponse({'username_error': 'Invalid Characters for a username. Enter alpha numeric characters'})
+
+
+class EmailValidationView(View):
+    def post(self, request):
+        email_name_json = json.loads(request.body);
+        email = email_name_json['email']  # TODO: Error handling
+
+        # Check email validity
+        if validate_email(str(email)) and not User.objects.filter(email=email).exists():
+            return JsonResponse({'email_success': 'Looks good!'})
+        else:
+            return JsonResponse({'email_error': 'Please enter valid email'})
