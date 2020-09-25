@@ -8,25 +8,28 @@
             <div class="card-title">
                 <h4 align="center"> Register for a free account!</h4>
             </div>
-                <form action="" method="post">
+                <form action="{% url 'register_new_user' %}" method="POST">
+
+                    {% csrf_token %}
+
+                    {% include 'partials/_messages.html' %}
 
                     <div class="form-group">
-                        <input type="text" name="Username" id="usernameField" class="form-control form-control-sm">
+                        <input type="text" name="username" id="usernameField" class="form-control form-control-sm">
                     </div>
                     <div class="invalid-feedback" id="invalid-feedback-username" style="display: none">
                         <p> Sorry! Username already taken</p>
                     </div>
 
                     <div class="form-group">
-                         <input type="email" name="Email" id="emailField" class="form-control form-control-sm">
+                         <input type="email" name="email" id="emailField" class="form-control form-control-sm">
                     </div>
                     <div class="invalid-feedback" id="invalid-feedback-email" style="display: none">
                         <p> Sorry! Wrong Email Format!</p>
                     </div>
 
-
                     <div class="form-group">
-                        <input type="password" name="Password" id="passwordField" class="form-control form-control-sm">
+                        <input type="password" name="password" id="passwordField" class="form-control form-control-sm">
                     </div>
                     <small class="float-right" id="show-password-btn" style="cursor: pointer">Show Password</small>
                      <div class="form-group">

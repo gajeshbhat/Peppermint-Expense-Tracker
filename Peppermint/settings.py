@@ -125,3 +125,6 @@ STATIC_ROOT = os.path.join(BASE_DIR, 'static')  # For Minifying on deployment
 
 # Heroku Deployment setup
 django_heroku.settings(locals())
+
+# Email Configurations
+EMAIL_BACKEND = 'django.core.mail.backends.console.EmailBackend'

@@ -3,8 +3,10 @@ import json
 from django.shortcuts import render
 from django.views import View
 from django.http import JsonResponse
-from django.contrib.auth.models import User
 from validate_email import validate_email
+from django.contrib import messages
+from django.contrib.auth.models import User
+from django.core.mail import send_mail
 
 
 # User account auth Views
@@ -12,6 +14,29 @@ from validate_email import validate_email
 class RegistrationView(View):
     def get(self, request):
         return render(request, 'authentication/register.html')
+
+    def post(self, request):
+        username = request.POST.get('username')
+        email = request.POST.get('email')
+        password = request.POST.get('password')
+
+        if len(password) < 6:
+            messages.add_message(request, messages.ERROR, 'Please Enter Password more than 6 Characters')
+        else:
+            new_user = User.objects.create_user(username=username, email=email, password=password)
+            new_user.save()
+            self.send_confirmation_email(email)
+            messages.add_message(request, messages.SUCCESS, 'Registration Successful! Please check your email!')
+        return render(request, 'authentication/register.html')
+
+    def send_confirmation_email(self, email):
+        send_mail(
+            'Peppermint Registration',
+            'Your Registration was successful!',
+            'noreply@pepperminttracker.com',
+            [str(email)],
+            fail_silently=False,
+        )
 
 
 class UserNameValidationView(View):
@@ -39,3 +64,8 @@ class EmailValidationView(View):
             return JsonResponse({'email_success': 'Looks good!'})
         else:
             return JsonResponse({'email_error': 'Please enter valid email'})
+
+class LoginView(View):
+    def post(selfself,request):
+        # DO user auth
+        return render(request, 'authentication/login.html')
