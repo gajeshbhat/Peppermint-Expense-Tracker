@@ -1,13 +1,13 @@
 import json
 
-from django.shortcuts import render
+from django.shortcuts import render, redirect
 from django.views import View
 from django.http import JsonResponse
 from validate_email import validate_email
 from django.contrib import messages
 from django.contrib.auth.models import User
 from django.core.mail import send_mail
-from django.contrib.auth import authenticate
+from django.contrib.auth import authenticate, logout, login
 
 
 # User account auth Views
@@ -74,10 +74,18 @@ class LoginView(View):
     def post(self, request):
         username = request.POST.get('username')
         password = request.POST.get('password')
-
-        if authenticate(request,username=username,password=password) is not None:
+        user = authenticate(request, username=username, password=password)
+        if user is not None:
+            login(request, user)
             messages.add_message(request, messages.SUCCESS, "Login Successful!")
-            return render(request, 'authentication/login.html') # TODO Redirect to Dashboard page
+            return redirect('expense_homepage')  # TODO Redirect to Dashboard page
         else:
             messages.add_message(request, messages.ERROR, "Invalid credentials!")
             return render(request, 'authentication/login.html')
+
+
+class LogoutView(View):
+    def post(self, request):
+        logout(request)
+        messages.add_message(request, messages.SUCCESS, "You logged out Successful!")
+        return redirect('user_login')
