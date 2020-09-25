@@ -7,6 +7,7 @@ from validate_email import validate_email
 from django.contrib import messages
 from django.contrib.auth.models import User
 from django.core.mail import send_mail
+from django.contrib.auth import authenticate
 
 
 # User account auth Views
@@ -65,7 +66,18 @@ class EmailValidationView(View):
         else:
             return JsonResponse({'email_error': 'Please enter valid email'})
 
+
 class LoginView(View):
-    def post(selfself,request):
-        # DO user auth
+    def get(self, request):
         return render(request, 'authentication/login.html')
+
+    def post(self, request):
+        username = request.POST.get('username')
+        password = request.POST.get('password')
+
+        if authenticate(request,username=username,password=password) is not None:
+            messages.add_message(request, messages.SUCCESS, "Login Successful!")
+            return render(request, 'authentication/login.html') # TODO Redirect to Dashboard page
+        else:
+            messages.add_message(request, messages.ERROR, "Invalid credentials!")
+            return render(request, 'authentication/login.html')
