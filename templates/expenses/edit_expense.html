@@ -45,11 +45,12 @@
           <label for="">Date of Expense</label>
           <input
             type="date"
-            value="{{ context.expense_to_edit.date }}"
+            value="{{ context.expense_to_edit.date|date:"Y-m-d" }}"
             class="form-control form-control-sm"
             name="expense_date"
           />
         </div>
+        <input type="hidden" value="{{context.expense_to_edit.id}}" name="expense_id"/>
         <input
           type="submit"
           value="Submit"

@@ -1,6 +1,6 @@
 from time import strftime
 
-from django.shortcuts import render
+from django.shortcuts import render, redirect
 from .models import Expense, Category
 from django.views import View
 from django.contrib import messages
@@ -58,7 +58,8 @@ class EditExpenseView(LoginRequiredMixin, View):
             'amount': expense_to_edit.values()[0]['amount'],
             'description': expense_to_edit.values()[0]['description'],
             'category': expense_to_edit.values()[0]['category'],
-            'date': expense_to_edit.values()[0]['date']
+            'date': expense_to_edit.values()[0]['date'],
+            'id': expense_for_id
         }
         categories = Category.objects.all();
         context = {
@@ -66,3 +67,23 @@ class EditExpenseView(LoginRequiredMixin, View):
             'expense_to_edit': expense_to_edit,
         }
         return render(request, 'expenses/edit_expense.html', {'context': context})
+
+    def post(self, request):
+        amount = request.POST.get('amount')
+        description = request.POST.get('description')
+        category = request.POST.get('category')
+        date = request.POST.get('expense_date')
+        expense_id = request.POST.get('expense_id')
+
+        if amount is None or description is None or category is None or date is None:
+            messages.add_message(request, messages.ERROR, 'Please enter all the details')
+            return redirect(request, 'expenses/edit_expense.html')
+        else:
+            expense_to_update = Expense.objects.get(id=expense_id);
+            expense_to_update.amount = amount
+            expense_to_update.description = description
+            expense_to_update.category = category
+            expense_to_update.date = date
+            expense_to_update.save()
+            messages.add_message(request, messages.SUCCESS, 'Expense Updated Successfully')
+            return redirect('expense_homepage')
