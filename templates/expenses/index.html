@@ -1,17 +1,62 @@
 {% extends 'base.html' %}
+{% load static %}
 
 {% block content %}
-    <h1>Expense Home</h1>
-    <div class="row">
-      <div class="col-md-9">
-        <nav aria-label="breadcrumb">
-            <ol class="breadcrumb">
-                <li class="breadcrumb-item"><a href="{% url 'expense_homepage' %}">Expenses</a></li>
-            </ol>
-        </nav>
+  <div class="container mt-4">
+  <div class="row">
+    <div class="col-md-10">
+      <nav aria-label="breadcrumb">
+        <ol class="breadcrumb">
+          <li class="breadcrumb-item">
+            <a href="">Expenses</a>
+          </li>
+          <li class="breadcrumb-item active" aria-current="page">
+            My Expenses
+          </li>
+        </ol>
+      </nav>
     </div>
-    <div class="col-md-2">
-        <a class="btn btn-primary" href="{% url 'add_expense' %}">Add Expense</a>
+
+      <div class="col-md-2">
+      <a href="{% url 'add_expense'%}" class="btn btn-primary">Add Expense</a>
     </div>
-    </div>
+  </div>
+
+  <div class="container">
+      <div class="app-table">
+
+  <table class="table table-stripped table-hover">
+    <thead>
+      <tr>
+        <th>Amount ({{currency}})</th>
+        <th>Category</th>
+        <th>Description</th>
+        <th>Date</th>
+        <th></th>
+      </tr>
+    </thead>
+
+    <tbody>
+      {% for expense in expenses%}
+      <tr>
+        <td>{{expense.amount}}</td>
+        <td>{{expense.category}}</td>
+        <td>{{expense.description}}</td>
+        <td>{{expense.date}}</td>
+
+        <td>
+            <form action="{% url 'edit_expense' %}" method="GET">
+                {% csrf_token %}
+                <input type="hidden" value="{{expense.id}}" name="expense_id"/>
+                <input type="submit" value ="Edit" class="btn btn-secondary btn-sm"/>
+            </form>
+        </td>
+      </tr>
+
+      {% endfor %}
+    </tbody>
+  </table>
+</div>
+  </div>
+  </div>
 {% endblock %}

@@ -1,3 +1,5 @@
+from time import strftime
+
 from django.shortcuts import render
 from .models import Expense, Category
 from django.views import View
@@ -8,7 +10,11 @@ from django.contrib.auth.mixins import LoginRequiredMixin
 
 @login_required(login_url='/accounts/login')
 def index(request):
-    return render(request, 'expenses/index.html')
+    all_expenses = Expense.objects.all();
+    expenses = {
+        'expenses': all_expenses
+    }
+    return render(request, 'expenses/index.html', expenses)
 
 
 class AddExpenseView(LoginRequiredMixin, View):
@@ -39,3 +45,24 @@ class AddExpenseView(LoginRequiredMixin, View):
             new_expense_entry.save()
             messages.add_message(request, messages.SUCCESS, 'Expense Successfully added')
             return render(request, 'expenses/index.html')
+
+
+class EditExpenseView(LoginRequiredMixin, View):
+    # Redirect to login
+    login_url = '/accounts/login'
+
+    def get(self, request):
+        expense_for_id = request.GET.get('expense_id')
+        expense_to_edit = Expense.objects.filter(pk=expense_for_id)
+        expense_to_edit = {
+            'amount': expense_to_edit.values()[0]['amount'],
+            'description': expense_to_edit.values()[0]['description'],
+            'category': expense_to_edit.values()[0]['category'],
+            'date': expense_to_edit.values()[0]['date']
+        }
+        categories = Category.objects.all();
+        context = {
+            'categories': categories,
+            'expense_to_edit': expense_to_edit,
+        }
+        return render(request, 'expenses/edit_expense.html', {'context': context})
