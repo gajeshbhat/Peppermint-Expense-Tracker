@@ -2,4 +2,16 @@
 
 {% block content %}
     <h1>Expense Home</h1>
+    <div class="row">
+      <div class="col-md-9">
+        <nav aria-label="breadcrumb">
+            <ol class="breadcrumb">
+                <li class="breadcrumb-item"><a href="{% url 'expense_homepage' %}">Expenses</a></li>
+            </ol>
+        </nav>
+    </div>
+    <div class="col-md-2">
+        <a class="btn btn-primary" href="{% url 'add_expense' %}">Add Expense</a>
+    </div>
+    </div>
 {% endblock %}
