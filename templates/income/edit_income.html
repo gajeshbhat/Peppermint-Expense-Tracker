@@ -1,0 +1,63 @@
+{% extends 'base.html' %}
+
+{% block content %}
+    <h1>Edit Expense</h1>
+    <nav aria-label="breadcrumb">
+  <ol class="breadcrumb">
+    <li class="breadcrumb-item"><a href="{% url 'income_homepage' %}">Expenses</a></li>
+    <li class="breadcrumb-item active" aria-current="page">Edit Expense</li>
+  </ol>
+    </nav>
+
+    <!-- Income edit form here-->
+    <div class="card">
+    <div class="card-body">
+      <form action="{% url 'income_expense' %}" method="post">
+        {% include 'partials/_messages.html'%} {% csrf_token %}
+        <div class="form-group">
+          <label for="">Amount</label>
+          <input
+            type="text"
+            class="form-control form-control-sm"
+            name="amount"
+            value="{{ context.income_to_edit.amount }}"
+          />
+        </div>
+        <div class="form-group">
+          <label for="">Description</label>
+          <input
+            type="text"
+            class="form-control form-control-sm"
+            name="description"
+            value="{{context.income_to_edit.description}}"
+          />
+        </div>
+        <div class="form-group">
+          <label for="">Category</label>
+          <select class="form-control" name="category">
+            {% for category in context.categories%}
+            <option name="category" value="{{category.name}}"
+              >{{category.name}}</option>
+            {% endfor %}
+          </select>
+        </div>
+        <div class="form-group">
+          <label for="">Date of Expense</label>
+          <input
+            type="date"
+            value="{{ context.income_to_edit.date|date:"Y-m-d" }}"
+            class="form-control form-control-sm"
+            name="expense_date"
+          />
+        </div>
+        <input type="hidden" value="{{context.income_to_edit.id}}" name="expense_id"/>
+        <input
+          type="submit"
+          value="Submit"
+          class="btn btn-primary btn-primary-sm"
+        />
+      </form>
+    </div>
+  </div>
+    </form>
+{% endblock %}

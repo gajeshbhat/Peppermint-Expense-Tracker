@@ -1,5 +1,6 @@
 from time import strftime
 
+from django.core.paginator import Paginator
 from django.shortcuts import render, redirect
 from .models import Expense, Category
 from django.views import View
@@ -11,8 +12,12 @@ from django.contrib.auth.mixins import LoginRequiredMixin
 @login_required(login_url='/accounts/login')
 def index(request):
     all_expenses = Expense.objects.all();
+    pagination_object = Paginator(all_expenses,4)
+    current_page_num = request.GET.get('page')
+    expense_pagination = Paginator.get_page(pagination_object,current_page_num)
     expenses = {
-        'expenses': all_expenses
+        'expenses': all_expenses,
+        'page_obj': expense_pagination
     }
     return render(request, 'expenses/index.html', expenses)
 
@@ -44,7 +49,7 @@ class AddExpenseView(LoginRequiredMixin, View):
                                                        owner=owner, date=date)
             new_expense_entry.save()
             messages.add_message(request, messages.SUCCESS, 'Expense Successfully added')
-            return render(request, 'expenses/index.html')
+            return redirect('expense_homepage')
 
 
 class EditExpenseView(LoginRequiredMixin, View):
@@ -77,7 +82,7 @@ class EditExpenseView(LoginRequiredMixin, View):
 
         if amount is None or description is None or category is None or date is None:
             messages.add_message(request, messages.ERROR, 'Please enter all the details')
-            return redirect(request, 'expenses/edit_expense.html')
+            return redirect(request, 'expenses/edit_income.html')
         else:
             expense_to_update = Expense.objects.get(id=expense_id);
             expense_to_update.amount = amount
