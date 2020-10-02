@@ -7,14 +7,16 @@ from django.views import View
 from django.contrib import messages
 from django.contrib.auth.decorators import login_required
 from django.contrib.auth.mixins import LoginRequiredMixin
+from datetime import datetime, timedelta
+from django.http import JsonResponse
 
 
 @login_required(login_url='/accounts/login')
 def index(request):
-    all_expenses = Expense.objects.all();
-    pagination_object = Paginator(all_expenses,4)
+    all_expenses = Expense.objects.filter(owner=request.user);
+    pagination_object = Paginator(all_expenses, 4)
     current_page_num = request.GET.get('page')
-    expense_pagination = Paginator.get_page(pagination_object,current_page_num)
+    expense_pagination = Paginator.get_page(pagination_object, current_page_num)
     expenses = {
         'expenses': all_expenses,
         'page_obj': expense_pagination
@@ -92,3 +94,23 @@ class EditExpenseView(LoginRequiredMixin, View):
             expense_to_update.save()
             messages.add_message(request, messages.SUCCESS, 'Expense Updated Successfully')
             return redirect('expense_homepage')
+
+
+class ExpenseCategorySummaryView(View):
+    def get(self, request):
+        today_date = datetime.today()
+        six_month_ago = today_date - timedelta(days=180);
+        expenses_six_months = Expense.objects.filter(date__gte=six_month_ago, date__lte=today_date)
+        expense_by_category = self.get_expense_by_category(expenses_six_months)
+        print(type(expense_by_category))
+        return JsonResponse(expense_by_category)
+
+    def get_expense_by_category(self, expenses_six_months):
+        all_category_expense_sum = {}
+        for expense in expenses_six_months:
+            if expense.category not in all_category_expense_sum:
+                all_category_expense_sum[expense.category] = expense.amount
+            else:
+                all_category_expense_sum[expense.category] += expense.amount
+
+        return all_category_expense_sum
