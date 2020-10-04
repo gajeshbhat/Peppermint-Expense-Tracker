@@ -11,6 +11,8 @@ psycopg2 = '*'
 django-heroku = '*'
 gunicorn = '*'
 validate-email = '*'
+xlwt = "*"
+weasyprint = "*"
 
 [requires]
 python_version = "3.7"

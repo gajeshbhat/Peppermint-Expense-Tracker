@@ -1,4 +1,5 @@
-from time import strftime
+import csv
+import xlwt
 
 from django.core.paginator import Paginator
 from django.shortcuts import render, redirect
@@ -8,7 +9,7 @@ from django.contrib import messages
 from django.contrib.auth.decorators import login_required
 from django.contrib.auth.mixins import LoginRequiredMixin
 from datetime import datetime, timedelta
-from django.http import JsonResponse
+from django.http import JsonResponse, HttpResponse
 
 
 @login_required(login_url='/accounts/login')
@@ -114,3 +115,53 @@ class ExpenseCategorySummaryView(View):
                 all_category_expense_sum[expense.category] += expense.amount
 
         return all_category_expense_sum
+
+
+def export_csv(request):
+    csv_response = HttpResponse(content_type='text/csv')
+    csv_response['Content-disposition'] = str('attachment; filename=peppermint_expenses' + str(datetime.now()) + '.csv')
+    expense_writer = csv.writer(csv_response)
+    expense_writer.writerow(['Amount', 'Description', 'Category', 'Date'])
+
+    all_expense_objects = Expense.objects.filter(owner=request.user);
+
+    for expense in all_expense_objects:
+        expense_writer.writerow([expense.amount, expense.description, expense.category, expense.date])
+
+    return csv_response
+
+
+def export_excel(request):
+    xls_response = HttpResponse(content_type='application/ms-excel')
+    xls_response['Content-disposition'] = str('attachment; filename=peppermint_expenses' + str(datetime.now()) + '.xls')
+    expense_workbook = xlwt.Workbook(encoding='utf-8')
+    expense_worksheet = expense_workbook.add_sheet('Expense')
+    row_num = 0
+    font_style = xlwt.XFStyle()
+    font_style.font.bold = True
+
+    expense_columns = ['Amount', 'Description', 'Category', 'Date']
+
+    for col_num in range(len(expense_columns)):
+        expense_worksheet.write(row_num, col_num, expense_columns[col_num], font_style)
+
+    font_style = xlwt.XFStyle()
+
+    all_expense_objects = Expense.objects.filter(owner=request.user).values_list('amount', 'description', 'category',
+                                                                                 'date');
+
+    for row in all_expense_objects:
+        row_num += 1
+
+        for col_num in range(len(row)):
+            expense_worksheet.write(row_num, col_num, str(row[col_num]), font_style)
+
+    expense_workbook.save(xls_response)
+    return xls_response
+
+
+def export_pdf(request):
+    pdf_response = HttpResponse(content_type='application/pdf')
+    pdf_response['Content-disposition'] = str('attachment; filename=peppermint_expenses' + str(datetime.now()) + '.pdf')
+
+    return pdf_response
